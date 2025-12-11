@@ -159,3 +159,11 @@ mpg	cylinders	displacement	horsepower	weight	acceleration	model_year	car_name
 14.0	8	455.0	225.0	4425.0	10.0	70	pontiac catalina
 15.0	8	390.0	190.0	3850.0	8.5	70	amc ambassador dpl
 ```
+### How does the program run?
+We first load the auto MPG dataset into the MySQL Auto database to execute in the InertData.java program. Second we Run the AutoGUI.java code to begin the graphical user interface once the data has been successfully inserted. Third we conduct a search to see the results obtained based off the database as we type "ALL" or enter the name of an automobile in the GUI to get results from the TSV file.
+
+### Challenges
+The first challenge I've experienced was figuring out how to use NumberFormatException brought on through the TSV file's header line, which I was able to resolve by removing the first line before processing. Second was that Intelliji was missing the MySQL Connector J library, which I needed to find the correct jar driver to get the result of "Data Inserted Successfully!" inside of the program. Third was modifying, and reading the algorithm making sure that every column matched the data type into the database table, resolving the SQL insertion issues.
+
+### My Assignment Video Link:
+
