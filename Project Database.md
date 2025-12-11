@@ -23,3 +23,139 @@ Using the connection supplied by DBConnection.java, each search reveals an SQL q
 
 ### JSliders for MPG and Horsepower
 The interface enables users to select a minimum MPG, and minimum horsepower figure using sliders if JSliders are added. The slider values and application then runs a filtered SQL WHERE query, which displays all the cars that match in the results section.
+
+### My Flowchart:
+![Project Database](https://github.com/user-attachments/assets/d0c09b52-8e07-4211-9e00-25ebb86962b7)
+
+### My Project Code:
+*DBConnection.java*
+```
+import java.sql.*;
+
+public class DBConnection {
+    public static Connection getConnection() {
+        String url = "jdbc:mysql://localhost:3306/Auto";
+        String user = "root";
+        String pass = "MyLab7865";
+
+        try {
+            return DriverManager.getConnection(url, user, pass);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+}
+```
+*AutoGUI.java*
+```
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.sql.*;
+
+public class AutoGUI {
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("Auto MPG Search");
+        frame.setSize(500, 200);
+        frame.setLayout(new FlowLayout());
+
+        JTextField input = new JTextField(20);
+        JButton searchButton = new JButton("Search");
+
+        JTextArea output = new JTextArea(20, 40);
+        JScrollPane scroll = new JScrollPane(output);
+
+        frame.add(new JLabel("Enter car name or 'ALL':"));
+        frame.add(input);
+        frame.add(searchButton);
+        frame.add(scroll);
+
+        searchButton.addActionListener(e -> {
+            String text = input.getText();
+            output.setText("");
+
+            String query = text.equalsIgnoreCase("ALL") ?
+                    "SELECT * FROM AutoMPG" :
+                    "SELECT * FROM AutoMPG WHERE car_name LIKE '%" + text + "%'";
+
+            try (Connection conn = DBConnection.getConnection();
+                 Statement stmt = conn.createStatement();
+                 ResultSet rs = stmt.executeQuery(query)) {
+
+                while (rs.next()) {
+                    output.append(
+                            rs.getInt("id") + " | " +
+                                    rs.getDouble("mpg") + " | " +
+                                    rs.getString("car_name") + "\n"
+                    );
+                }
+
+            } catch (Exception ex) {
+                output.setText("Error: " + ex.getMessage());
+            }
+        });
+
+        frame.setVisible(true);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+}
+```
+*InsertData.java*
+```
+import java.io.*;
+import java.sql.*;
+
+public class InsertData {
+    public static void main(String[] args) {
+        String file = "src/auto-mpg.data.tsv";
+
+        try (BufferedReader br = new BufferedReader(new FileReader(file));
+             Connection conn = DBConnection.getConnection()) {
+
+            br.readLine();
+
+            String line;
+            String sql = "INSERT INTO AutoMPG (mpg, cylinders, displacement, horsepower, weight, acceleration, model_year, origin, car_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            PreparedStatement ps = conn.prepareStatement(sql);
+
+            while ((line = br.readLine()) != null) {
+                String[] data = line.split("\t");
+
+                ps.setDouble(1, Double.parseDouble(data[0]));
+                ps.setInt(2, Integer.parseInt(data[1]));
+                ps.setDouble(3, Double.parseDouble(data[2]));
+                ps.setDouble(4, Double.parseDouble(data[3]));
+                ps.setDouble(5, Double.parseDouble(data[4]));
+                ps.setDouble(6, Double.parseDouble(data[5]));
+                ps.setInt(7, Integer.parseInt(data[6]));
+
+                ps.setString(8, "USA");
+
+                ps.setString(9, data[7]);
+
+                ps.executeUpdate();
+            }
+
+            System.out.println("Data inserted successfully!");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+*auto-mpg.data.tsv*
+```
+mpg	cylinders	displacement	horsepower	weight	acceleration	model_year	car_name
+18.0	8	307.0	130.0	3504.0	12.0	70	chevrolet chevelle malibu
+15.0	8	350.0	165.0	3693.0	11.5	70	buick skylark 320
+18.0	8	318.0	150.0	3436.0	11.0	70	plymouth satellite
+16.0	8	304.0	150.0	3433.0	12.0	70	amc rebel sst
+17.0	8	302.0	140.0	3449.0	10.5	70	ford torino
+15.0	8	429.0	198.0	4341.0	10.0	70	ford galaxie 500
+14.0	8	454.0	220.0	4354.0	9.0	70	chevrolet impala
+14.0	8	440.0	215.0	4312.0	8.5	70	plymouth fury iii
+14.0	8	455.0	225.0	4425.0	10.0	70	pontiac catalina
+15.0	8	390.0	190.0	3850.0	8.5	70	amc ambassador dpl
+```
