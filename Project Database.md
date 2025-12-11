@@ -22,7 +22,7 @@ The user can view each vehicle inside of the dataset by typing "ALL", causes the
 Using the connection supplied by DBConnection.java, each search reveals an SQL query to MySQL. Which, the query executes in the background to display the GUI with results.
 
 ### JSliders for MPG and Horsepower
-The interface enables users to select a minimum MPG, and minimum horsepower figure using sliders if JSliders are added. The slider values and application then runs a filtered SQL WHERE query, which displays all the cars that match in the results section.
+The interface enables users to select a minimum MPG, and minimum horsepower figure using sliders if JSliders are added. The slider values and application then runs a filtered SQL WHERE query, which displays all the cars that match in the results section. 
 
 ### My Flowchart:
 ![Project Database](https://github.com/user-attachments/assets/d0c09b52-8e07-4211-9e00-25ebb86962b7)
